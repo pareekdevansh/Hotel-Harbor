@@ -1,0 +1,23 @@
+{
+  "name": "hotel-harbor",
+  "version": "1.0.0",
+  "description": "Hotel Booking Website",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pareekdevansh/Hotel-Harbor.git"
+  },
+  "author": "Devansh Pareek",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pareekdevansh/Hotel-Harbor/issues"
+  },
+  "homepage": "https://github.com/pareekdevansh/Hotel-Harbor#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22"
+  }
+}

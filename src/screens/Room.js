@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { Modal, Button, Carousel } from 'react-bootstrap';
-import link from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function Room({ room }) {
   const [show, setShow] = useState(false);
@@ -24,9 +24,10 @@ function Room({ room }) {
         <p>Rent Per Day: {room.rentPerDay} INR</p>
 
         <div style={{ float: 'right' }}>
-          <link to={'/book/${room._id}'} >
+
+          <Link to={'/book/${roomid}'} >
             <button className='btn btn-primary ml-auto' style={{ marginRight: '10px' }}>Book</button>
-          </link>
+          </Link>
           <button className='btn btn-primary ml-auto' onClick={handleShow}>View details</button>
         </div>
 
@@ -43,7 +44,7 @@ function Room({ room }) {
                   <img
                     className="d-block w-100 big-img"
                     src={url}
-                    alt='hotel image'
+                    alt='room'
                   />
                 </Carousel.Item>
 
@@ -60,4 +61,12 @@ function Room({ room }) {
           </Button>
           <Button variant="primary" onClick={handleClose}>
             Book
-     
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
+
+  )
+}
+
+export default Room;

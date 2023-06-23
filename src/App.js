@@ -12,4 +12,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/home' element={<Homescreen />} />
-          <Route paht='/book/
+          <Route path='/book/:roomid' element={<Bookingscreen />} />
+        </Routes>
+
+      </BrowserRouter>
+    </div>
+  );
+}
+
+export default App;

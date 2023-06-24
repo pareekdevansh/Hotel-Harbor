@@ -5,6 +5,6 @@ const dbConfig = require('./db');
 const roomsRoute = require('./routes/roomsRoute');
 
 const port = process.env.port || 5000;
-
+app.use(express.json());
 app.use('/api/rooms', roomsRoute);
 app.listen(port, () => console.log('Server started successfully on port : ${port} using nodemon'));

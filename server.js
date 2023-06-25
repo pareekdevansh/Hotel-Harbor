@@ -9,5 +9,5 @@ app.use(express.json());
 app.use("/api/rooms", roomsRoute);
 app.use("/api/users", usersRoute);
 app.listen(port, () =>
-  console.log("Server started successfully on port : ${port} using nodemon")
+  console.log(`Server started successfully on port : ${port} using nodemon`)
 );

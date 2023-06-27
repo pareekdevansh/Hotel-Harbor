@@ -21,10 +21,10 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       default: "Booked",
     },
-    transactionId: {
-      type: String,
-      required: true,
-    },
+    // transactionId: {
+    //   type: String,
+    //   required: true,
+    // },
   },
   {
     timestamps: true,

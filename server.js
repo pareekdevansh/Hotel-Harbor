@@ -1,21 +1,36 @@
 const express = require("express");
 const app = express();
+// const cors = require("cors");
 const dbConfig = require("./db");
+
+const authRoute = require("./routes/authRoute");
 const roomsRoute = require("./routes/roomsRoute");
-const usersRoute = require("./routes/usersRoute");
 const bookingsRoute = require("./routes/bookingsRoute");
 const stripeRoute = require("./routes/stripeRoute");
+const privateRoute = require("./routes/privateRoute");
+const errorHandler = require("./middleware/error");
 const port = process.env.PORT || 5000;
 
+// app.use(cors);
 app.use(express.json());
 app.use(express.static("public"));
 
+
+app.get("/", (req, res, next) => {
+  res.send("Api running");
+});
+
+//routes
+app.use("/api/private", privateRoute);
+app.use("/api/auth", authRoute);
 app.use("/api/rooms", roomsRoute);
-app.use("/api/users", usersRoute);
 app.use("/api/bookings", bookingsRoute);
 app.use("/api/stripe", stripeRoute);
-
-// app.listen(4242, () => console.log("payment server running on port 4242"));
-app.listen(port, () =>
-  console.log(`server started successfully on port : ${port}`)
+app.use(errorHandler); // error handler : should be last in the middleware
+const server = app.listen(port, () =>
+  console.log(`server started on port : ${port}`)
 );
+process.on("unhandledRejection", (error, promise) => {
+  console.log(`Logged Error: ${error}`);
+  server.close(() => process.exit(1));
+});

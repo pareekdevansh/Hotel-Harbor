@@ -4,6 +4,7 @@ const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const genAuthToken = require("../utils/genAuthToken");
 const ErrorResponse = require("../utils/errorResponse");
+const sendMail = require("../utils/sendMail");
 
 exports.register = async (req, res, next) => {
   try {
@@ -26,7 +27,7 @@ exports.register = async (req, res, next) => {
       email: req.body.email,
       password: req.body.password,
     });
-    res.send("User Registered Successfully")
+    res.send("User Registered Successfully");
   } catch (error) {
     return next(new ErrorResponse(error.message, 500));
   }
@@ -62,22 +63,23 @@ exports.login = async (req, res, next) => {
   }
 };
 
-// @desc    Forgot Password Initialization
 exports.forgotPassword = async (req, res, next) => {
   // Send Email to email provided but first check if user exists
   const { email } = req.body;
+  console.log("received email : ", email);
 
   try {
-    const user = await User.findOne({ email });
-
+    const user = await User.findOne({ email: email });
+    console.log("found user in db : ", user);
     // we should not tell user that no such email exist in out db
     if (!user) {
+      console.log("no such email found in db");
       return next(new ErrorResponse("Email could not be sent", 404));
     }
 
     // Reset Token Gen and add to database hashed (private) version of token
     const resetToken = user.getResetPasswordToken();
-
+    console.log("generated reset Token: ", resetToken);
     await user.save();
 
     // Create reset url to email to provided email
@@ -91,11 +93,13 @@ exports.forgotPassword = async (req, res, next) => {
     `;
 
     try {
-      await sendEmail({
+      console.log("before calling send mail ");
+      await sendMail({
         to: user.email,
         subject: "Password Reset Request",
         text: message,
       });
+      console.log("after calling send mail ");
 
       res.status(200).json({ success: true, data: "Email Sent" });
     } catch (err) {
@@ -120,14 +124,15 @@ exports.resetPassword = async (req, res, next) => {
     .createHash("sha256")
     .update(req.params.resetToken)
     .digest("hex");
-
+  console.log("resetPasswordToken: ", resetPasswordToken);
   try {
     const user = await User.findOne({
       resetPasswordToken,
       resetPasswordExpire: { $gt: Date.now() },
     });
-
+    console.log("user with such tokenRequest: ", user);
     if (!user) {
+      console.log("no such token found");
       return next(new ErrorResponse("Invalid Token", 400));
     }
 
@@ -136,13 +141,14 @@ exports.resetPassword = async (req, res, next) => {
     user.resetPasswordExpire = undefined;
 
     await user.save();
-
+    console.log("new password saved in db");
     res.status(201).json({
       success: true,
       data: "Password Updated Success",
       token: user.getSignedJwtToken(),
     });
   } catch (err) {
+    console.log(err);
     next(err);
   }
 };

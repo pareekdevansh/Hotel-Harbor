@@ -2,7 +2,6 @@ const crypto = require("crypto");
 const User = require("../models/User");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
-const genAuthToken = require("../utils/genAuthToken");
 const ErrorResponse = require("../utils/errorResponse");
 const sendMail = require("../utils/sendMail");
 

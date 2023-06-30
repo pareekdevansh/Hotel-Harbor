@@ -2,6 +2,7 @@ const Room = require("../models/Room");
 const Booking = require("../models/Booking");
 const User = require("../models/User");
 const mongoose = require("mongoose");
+const ErrorResponse = require("../utils/errorResponse");
 exports.bookRoom = async (req, res) => {
   const { bookingId } = req.body;
   try {
@@ -38,7 +39,7 @@ exports.getBookingByEmail = async (req, res) => {
     const bookings = await Booking.find({ userId: user._id });
     res.send(bookings);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    return new ErrorResponse(error.message, 400);
   }
 };
 
@@ -47,6 +48,6 @@ exports.getAllBookings = async (req, res) => {
     const bookings = await Booking.find();
     res.send(bookings);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    return new ErrorResponse(error.message, 400);
   }
 };

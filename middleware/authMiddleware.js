@@ -32,7 +32,7 @@ exports.protect = async (req, res, next) => {
     console.log("before modifying request object");
     req.user = user;
     console.log("modifying req in protect call ", req.user);
-    // console.log("structure of request object after getting userdata : ", JSON.stringify(req)); // this was producing error ? 
+    // console.log("structure of request object after getting userData : ", JSON.stringify(req)); // this was producing error ? 
     console.log("passing the control from protect call");
     next();
   } catch (error) {

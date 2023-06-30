@@ -7,7 +7,7 @@ exports.getAllUsers = async (req, res) => {
     const users = await User.find();
     res.send(users);
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    return new ErrorResponse(error.message, 400);
   }
 };
 
@@ -21,11 +21,11 @@ exports.getUserDetails = async (req, res) => {
       email: user.email,
     };
     console.log(
-      "printing retrieved user details in getUserDetails : ",
+      "getUserDetails : user details: ",
       userDetails
     );
     res.send(userDetails);
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    return new ErrorResponse(error.message, 400);
   }
 };

@@ -1,7 +1,6 @@
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 const dayjs = require("dayjs");
-const { v4: uuidv4 } = require("uuid");
 const Booking = require("../models/Booking");
 exports.createCheckoutSession = async (req, res) => {
   const { roomId, roomName, checkInDate, checkOutDate, totalAmount } = req.body;
@@ -10,14 +9,16 @@ exports.createCheckoutSession = async (req, res) => {
   // CheckOut Screen will mark it's status Booked after Successful Payment
   let booking = new Booking({
     roomId: roomId,
+    roomName: roomName,
     userId: req.user._id,
     checkInDate: checkInDate,
     checkOutDate: checkOutDate,
     status: "Pending",
   });
-  booking  = await booking.save();
+  booking = await booking.save();
   const bookingId = booking._id;
-  console.log("inside new session : ", JSON.stringify(booking), " bookingId : ", bookingId);
+
+  console.log("inside new session : bookingId : ", bookingId);
 
   const fromDate = dayjs(checkInDate).format("DD/MM/YYYY");
   const toDate = dayjs(checkOutDate).format("DD/MM/YYYY");

@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-// const cors = require("cors");
+const cors = require("cors");
 const dbConfig = require("./db");
 
 const authRoute = require("./routes/authRoute");
@@ -9,10 +9,11 @@ const bookingsRoute = require("./routes/bookingsRoute");
 const stripeRoute = require("./routes/stripeRoute");
 const privateRoute = require("./routes/privateRoute");
 const usersRoute = require("./routes/usersRoute");
+const adminRoute = require("./routes/adminRoute");
 const errorHandler = require("./middleware/error");
 const port = process.env.PORT || 5000;
 
-// app.use(cors);
+app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -27,6 +28,7 @@ app.use("/api/users", usersRoute);
 app.use("/api/rooms", roomsRoute);
 app.use("/api/bookings", bookingsRoute);
 app.use("/api/stripe", stripeRoute);
+app.use("/api/admin", adminRoute);
 app.use(errorHandler); // error handler : should be last in the middleware
 const server = app.listen(port, () =>
   console.log(`server started on port : ${port}`)

@@ -5,6 +5,10 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    roomName: {
+      type: String,
+      required: true,
+    },
     userId: {
       type: String,
       required: true,
@@ -21,11 +25,7 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       required: true,
       default: "Booked",
-    },
-    // transactionId: {
-    //   type: String,
-    //   required: true,
-    // },
+    }
   },
   {
     timestamps: true,

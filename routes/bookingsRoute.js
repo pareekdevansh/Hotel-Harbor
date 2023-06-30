@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const bookingsController = require("../controllers/bookingsController");
+const bookingController = require("../controllers/bookingController");
 
-router.put("/bookroom",  bookingsController.bookRoom);
+router.put("/bookroom",  bookingController.bookRoom);
 
-router.post("/getbookigsfromemail", bookingsController.getBookingByEmail);
+router.post("/getbookigsfromemail", bookingController.getBookingByEmail);
 
-router.get("/getallbookings", bookingsController.getAllBookings);
+router.get("/getallbookings", bookingController.getAllBookings);
 module.exports = router;

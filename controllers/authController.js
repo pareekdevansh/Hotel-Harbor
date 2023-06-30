@@ -57,6 +57,7 @@ exports.login = async (req, res, next) => {
     // check if password is correct or not
     const isValidPassword = await user.matchPassword(req.body.password);
     if (!isValidPassword) throw new ErrorResponse("Invalid Credentials", 401);
+    console.log("login performed in backend");
     sendToken(user, 200, res);
   } catch (error) {
     return next(new ErrorResponse(error.message, 500));

@@ -1,5 +1,6 @@
 require("dotenv").config();
-import User from "../models/User";
+const User = require("../models/User");
+const ErrorResponse = require("../utils/errorResponse");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -10,17 +11,20 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-exports.getUserById = async (req, res) => {
-  const id = req.body.id;
+exports.getUserDetails = async (req, res) => {
   try {
-    const user = await User.findOne({ _id: id });
-    const userPublicDetails = {
-      _id: user._id,
+    console.log("entered getUserDetails function");
+    const user = req.user;
+    console.log("user is : ", user);
+    let userDetails = {
       name: user.name,
       email: user.email,
-      isAdmin: user.isAdmin,
     };
-    res.send(userPublicDetails);
+    console.log(
+      "printing retrieved user details in getUserDetails : ",
+      userDetails
+    );
+    res.send(userDetails);
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }

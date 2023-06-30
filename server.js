@@ -8,13 +8,13 @@ const roomsRoute = require("./routes/roomsRoute");
 const bookingsRoute = require("./routes/bookingsRoute");
 const stripeRoute = require("./routes/stripeRoute");
 const privateRoute = require("./routes/privateRoute");
+const usersRoute = require("./routes/usersRoute");
 const errorHandler = require("./middleware/error");
 const port = process.env.PORT || 5000;
 
 // app.use(cors);
 app.use(express.json());
 app.use(express.static("public"));
-
 
 app.get("/", (req, res, next) => {
   res.send("Api running");
@@ -23,6 +23,7 @@ app.get("/", (req, res, next) => {
 //routes
 app.use("/api/private", privateRoute);
 app.use("/api/auth", authRoute);
+app.use("/api/users", usersRoute);
 app.use("/api/rooms", roomsRoute);
 app.use("/api/bookings", bookingsRoute);
 app.use("/api/stripe", stripeRoute);

@@ -1,22 +1,28 @@
 const Room = require("../models/Room");
 const Booking = require("../models/Booking");
-
+const User = require("../models/User");
+const mongoose = require("mongoose");
 exports.bookRoom = async (req, res) => {
-  const { roomId, userId, checkInDate, checkOutDate } = req.body;
+  const { bookingId } = req.body;
   try {
-    const newBooking = new Booking({
-      roomId: roomId,
-      userId: userId,
-      checkInDate: checkInDate,
-      checkOutDate: checkOutDate,
+    const booking = await Booking.findOne({
+      _id: bookingId,
     });
-    const booking = await newBooking.save();
-    const room = await Room.findOne({ _id: roomId });
+    if (booking.status === "Booked") {
+      return res.status(400).json({ message: "Room is already booked!!" });
+    }
+    booking.status = "Booked";
+    await booking.save();
+    console.log("after updating status to Booked: ", booking);
+    const room = await Room.findOne({ _id: booking.roomId });
+    if (!room) {
+      return res.status(400).json({ message: "Room does not exist!!" });
+    }
     await room.currentBookings.push({
       bookingId: booking._id,
-      userId: userId,
-      checkInDate: checkInDate,
-      checkOutDate: checkOutDate,
+      userId: booking.userId,
+      checkInDate: booking.checkInDate,
+      checkOutDate: booking.checkOutDate,
     });
     await room.save();
     res.send(booking);
@@ -25,9 +31,11 @@ exports.bookRoom = async (req, res) => {
   }
 };
 
-exports.getBookingByUserId = async (req, res) => {
+exports.getBookingByEmail = async (req, res) => {
   try {
-    const bookings = await Booking.find({ userId: req.body.userId });
+    console.log("getting bookings with email : ", req.body.email);
+    const user = await User.findOne({ email: req.body.email });
+    const bookings = await Booking.find({ userId: user._id });
     res.send(bookings);
   } catch (error) {
     res.status(400).json({ message: error.message });

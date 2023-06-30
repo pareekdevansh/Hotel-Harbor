@@ -46,8 +46,12 @@ const sendMail = async (options) => {
 };
 sendMail()
   .then((result) => {
-    console.log("result after promise: ", JSON.stringify(result));
-    console.log("email is sent: ", result);
+    if (result) {
+      console.log("result after promise: ", JSON.stringify(result));
+      console.log("email is sent: ", result);
+    } else {
+      console.log("no result email :default process starting call ");
+    }
   })
   .catch((error) => {
     console.log(error.message);

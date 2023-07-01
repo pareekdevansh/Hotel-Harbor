@@ -1,4 +1,5 @@
 const Room = require("../../models/Room");
+const Booking = require("../../models/Booking");
 const ErrorResponse = require("../../utils/errorResponse");
 // Get all rooms
 exports.getAllRooms = async (req, res, next) => {
@@ -13,23 +14,36 @@ exports.getAllRooms = async (req, res, next) => {
 // Create a new room
 exports.createRoom = async (req, res, next) => {
   try {
-    const newRoom = new Room(req.body);
-    const savedRoom = await newRoom.save();
-    res.json(savedRoom);
+    const room = req.body;
+    console.log("Received room data:", room);
+    const newRoom = await Room.create(room);
+    console.log("Created new room:", newRoom);
+    res.json(newRoom);
   } catch (error) {
+    console.log("Error occurred:", error);
     next(new ErrorResponse("Internal server error", 500));
   }
 };
 
 // Update a room
+// update works on following fields for now:
+// name , maxCount , phoneNumber , email , rentPerDay, roomType , description
+// TODO: imgageUrl[]
 exports.updateRoom = async (req, res, next) => {
   try {
-    const updatedRoom = await Room.findByIdAndUpdate(req.params.id, req.body, {
+    const roomId = req.params.id;
+    const room = req.body;
+    const updatedRoom = await Room.findByIdAndUpdate(req.params.id, room, {
       new: true,
     });
+    // in bookings update the roomName field
     if (!updatedRoom) {
       return next(new ErrorResponse("Room not found", 404));
     }
+    await Booking.updateMany(
+      { roomId: roomId },
+      { $set: { roomName: room.name } }
+    );
     res.json(updatedRoom);
   } catch (error) {
     next(new ErrorResponse("Internal server error", 500));

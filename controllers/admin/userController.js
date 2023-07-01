@@ -1,59 +1,81 @@
 const User = require("../../models/User");
 const ErrorResponse = require("../../utils/errorResponse");
+const Booking = require("../../models/Booking");
+const Room = require("../../models/Room");
 
-// @desc    Get all users
-// @route   GET /api-admin/users
-// @access  Public
+// Get all users
 exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find();
+    console.log("Retrieved all users:", users);
     res.json(users);
   } catch (error) {
-    return next(new ErrorResponse("Internal server error", 500));
+    console.error("Error retrieving users:", error);
+    next(new ErrorResponse("Internal server error", 500));
   }
 };
 
-// @desc    Create a new user
-// @route   POST /api-admin/users
-// @access  Public
+// Create a new user
 exports.createUser = async (req, res, next) => {
+  const user = req.body;
+  console.log("Create user-creation request:", user);
   try {
-    const newUser = new User(req.body);
-    const savedUser = await newUser.save();
-    res.json(savedUser);
+    const newUser = await User.create(user);
+    console.log("Created user from admin panel:", newUser);
+    res.send(newUser);
   } catch (error) {
-    return next(new ErrorResponse("Internal server error", 500));
+    console.error("Error creating user: ", error);
+    next(new ErrorResponse(error.message, 400));
   }
 };
 
-// @desc    Update a user
-// @route   PUT /api-admin/users/:id
-// @access  Public
+// Update a user
 exports.updateUser = async (req, res, next) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const userId = req.params.id;
+    const user = req.body;
+    console.log("Update user request:", user);
+    const updatedUser = await User.findByIdAndUpdate(userId, user, {
       new: true,
     });
     if (!updatedUser) {
-      return next(new ErrorResponse("User not found", 404));
+      console.error("User not found");
+      throw new ErrorResponse("User not found", 404);
     }
+    console.log("Updated user:", updatedUser);
     res.json(updatedUser);
   } catch (error) {
-    return next(new ErrorResponse("Internal server error", 500));
+    console.error("Error updating user:", error);
+    next(new ErrorResponse("Internal server error", 500));
   }
 };
 
-// @desc    Delete a user by id
-// @route   DELETE /api-admin/users/:id
-// @access  Public
+// Delete a user
 exports.deleteUser = async (req, res, next) => {
   try {
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    const userId = req.params.id;
+
+    // Delete the user
+    const deletedUser = await User.findByIdAndDelete(userId);
     if (!deletedUser) {
-      return next(new ErrorResponse("User not found", 404));
+      throw new ErrorResponse("User not found", 404);
     }
+    console.log("Deleted user:", deletedUser);
+
+    // Delete all bookings associated with the user
+    await Booking.deleteMany({ userId });
+    console.log("Deleted bookings associated with the user");
+
+    // Update rooms to remove bookings associated with the user
+    await Room.updateMany(
+      { "currentBookings.userId": userId },
+      { $pull: { currentBookings: { userId } } }
+    );
+    console.log("Updated rooms to remove bookings associated with the user");
+
     res.json({ message: "User deleted successfully" });
   } catch (error) {
-    return next(new ErrorResponse("Internal server error", 500));
+    console.error("Error deleting user:", error);
+    next(new ErrorResponse("Internal server error", 500));
   }
 };

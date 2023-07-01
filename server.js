@@ -29,7 +29,7 @@ app.use("/api/rooms", roomsRoute);
 app.use("/api/bookings", bookingsRoute);
 app.use("/api/stripe", stripeRoute);
 app.use("/api/admin", adminRoute);
-app.use(errorHandler); // error handler : should be last in the middleware
+app.use(errorHandler); // error handler : should be last in the middlewares
 const server = app.listen(port, () =>
   console.log(`server started on port : ${port}`)
 );

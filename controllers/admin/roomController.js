@@ -5,6 +5,8 @@ const ErrorResponse = require("../../utils/errorResponse");
 exports.getAllRooms = async (req, res, next) => {
   try {
     const rooms = await Room.find();
+    console.log("printing rooms  ", rooms);
+
     res.json(rooms);
   } catch (error) {
     next(new ErrorResponse("Internal server error", 500));
@@ -32,10 +34,14 @@ exports.createRoom = async (req, res, next) => {
 exports.updateRoom = async (req, res, next) => {
   try {
     const roomId = req.params.id;
+    console.log("printing roomId ", roomId);
     const room = req.body;
+    console.log("printing room ", room);
+
     const updatedRoom = await Room.findByIdAndUpdate(req.params.id, room, {
       new: true,
     });
+
     // in bookings update the roomName field
     if (!updatedRoom) {
       return next(new ErrorResponse("Room not found", 404));

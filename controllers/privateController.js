@@ -4,10 +4,8 @@ exports.getPrivateData = (req, res, next) => {
   const userDetails = {
     name: user.name,
     email: user.email,
+    isAdmin: user.isAdmin,
   };
   console.log("Access provided for private data");
-  res.status(200).json({
-    success: true,
-    data: userDetails,
-  });
+  res.send(userDetails);
 };

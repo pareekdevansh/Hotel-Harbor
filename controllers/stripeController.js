@@ -1,7 +1,8 @@
-require("dotenv").config();
+const dotenv = require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 const dayjs = require("dayjs");
 const Booking = require("../models/Booking");
+
 exports.createCheckoutSession = async (req, res) => {
   const { roomId, roomName, checkInDate, checkOutDate, totalAmount } = req.body;
   // checkout- success require a booking id
@@ -39,8 +40,8 @@ exports.createCheckoutSession = async (req, res) => {
     mode: "payment",
 
     submit_type: "book",
-    success_url: `http://localhost:3000/checkout-success/${roomId}/${checkInDate}/${checkOutDate}/${bookingId}`,
-    cancel_url: `http://localhost:3000/book/${roomId}/${checkInDate}/${checkOutDate}`,
+    success_url: `${process.env.CLIENT_URL}/checkout-success/${roomId}/${checkInDate}/${checkOutDate}/${bookingId}`,
+    cancel_url: `${process.env.CLIENT_URL}/book/${roomId}/${checkInDate}/${checkOutDate}`,
   });
   res.send({ url: session.url });
 };

@@ -3,6 +3,7 @@ const User = require("../models/User");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const ErrorResponse = require("../utils/errorResponse");
+const dotenv = require("dotenv").config();
 const sendMail = require("../utils/sendMail");
 
 exports.register = async (req, res, next) => {
@@ -83,13 +84,13 @@ exports.forgotPassword = async (req, res, next) => {
     await user.save();
 
     // Create reset url to email to provided email
-    const resetUrl = `http://localhost:3000/resetpassword/${resetToken}`;
+    const resetUrl = `${CLIENT_URL}/resetpassword/${resetToken}`;
 
     // HTML Message
     const message = `
       <h1>You have requested a password reset</h1>
       <p>Please make a put request to the following link:</p>
-      <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+      <a href=${process.env.resetUrl} clicktracking=off>${resetUrl}</a>
     `;
 
     try {

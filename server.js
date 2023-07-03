@@ -11,9 +11,29 @@ const privateRoute = require("./routes/privateRoute");
 const usersRoute = require("./routes/usersRoute");
 const adminRoute = require("./routes/adminRoute");
 const errorHandler = require("./middleware/error");
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 
-app.use(cors());
+// app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://hotel-harbor.vercel.app/",
+      // "https://harbor-backend-service.onrender.com",
+    ],
+    credentials: true,
+  })
+);
+app.use((req, res, next) => {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://hotel-harbor.vercel.app/",
+    // "https://harbor-backend-service.onrender.com"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  next();
+});
 app.use(express.json());
 app.use(express.static("public"));
 

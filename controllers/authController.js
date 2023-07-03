@@ -1,9 +1,8 @@
+require("dotenv").config();
 const crypto = require("crypto");
 const User = require("../models/User");
 const Joi = require("joi");
-const bcrypt = require("bcrypt");
 const ErrorResponse = require("../utils/errorResponse");
-require("dotenv").config();
 const sendMail = require("../utils/sendMail");
 
 exports.register = async (req, res, next) => {

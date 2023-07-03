@@ -1,4 +1,4 @@
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 const dayjs = require("dayjs");
 const Booking = require("../models/Booking");

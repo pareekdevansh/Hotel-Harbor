@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const dbConfig = require("./db");
-
+require("dotenv").config();
 const authRoute = require("./routes/authRoute");
 const roomsRoute = require("./routes/roomsRoute");
 const bookingsRoute = require("./routes/bookingsRoute");
@@ -11,7 +11,7 @@ const privateRoute = require("./routes/privateRoute");
 const usersRoute = require("./routes/usersRoute");
 const adminRoute = require("./routes/adminRoute");
 const errorHandler = require("./middleware/error");
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());

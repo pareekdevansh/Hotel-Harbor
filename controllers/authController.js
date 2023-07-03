@@ -3,7 +3,7 @@ const User = require("../models/User");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const ErrorResponse = require("../utils/errorResponse");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const sendMail = require("../utils/sendMail");
 
 exports.register = async (req, res, next) => {
@@ -31,13 +31,6 @@ exports.register = async (req, res, next) => {
   } catch (error) {
     return next(new ErrorResponse(error.message, 500));
   }
-
-  // user = await user.save();
-  // const salt = await bcrypt.genSalt(10);
-  // user.password = await bcrypt.hash(user.password, salt);
-
-  // const token = genAuthToken(user);
-  // res.send(token);
 };
 
 exports.login = async (req, res, next) => {
@@ -84,13 +77,13 @@ exports.forgotPassword = async (req, res, next) => {
     await user.save();
 
     // Create reset url to email to provided email
-    const resetUrl = `${CLIENT_URL}/resetpassword/${resetToken}`;
+    const resetUrl = `${process.env.CLIENT_URL}/resetpassword/${resetToken}`;
 
     // HTML Message
     const message = `
       <h1>You have requested a password reset</h1>
-      <p>Please make a put request to the following link:</p>
-      <a href=${process.env.resetUrl} clicktracking=off>${resetUrl}</a>
+      <p>Please click following link:</p>
+      <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
     `;
 
     try {

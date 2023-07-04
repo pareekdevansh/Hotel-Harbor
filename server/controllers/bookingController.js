@@ -28,7 +28,7 @@ exports.bookRoom = async (req, res) => {
     await room.save();
     res.send(booking);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    return new ErrorResponse(error.message, 400);
   }
 };
 

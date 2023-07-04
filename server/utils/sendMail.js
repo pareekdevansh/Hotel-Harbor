@@ -55,6 +55,7 @@ sendMail()
   })
   .catch((error) => {
     console.log(error.message);
+    return new ErrorResponse(error.message, 500);
   });
 
 module.exports = sendMail;

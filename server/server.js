@@ -13,17 +13,35 @@ const adminRoute = require("./routes/adminRoute");
 const errorHandler = require("./middleware/error");
 const port = process.env.PORT || 5000;
 
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true,
-    headers: {
-      "Access-Control-Allow-Origin": process.env.CLIENT_URL,
+const allowedOrigin =
+  process.env.CLIENT_URL;
+
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    console.log(`origin is: ${origin}`);
+    console.log(`allowedOrigin: ${allowedOrigin}`);
+    if (origin === allowedOrigin) {
+      console.log("allowed");
+      callback(null, true);
+    } else {
+      console.log("not allowed");
+      callback(new Error("Not allowed by CORS"));
     }
-  })
-);
+  },
+  credentials: true,
+};
+
+// Enable CORS middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static("public"));
+
+// Set additional headers
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", allowedOrigin);
+  next();
+});
 
 app.get("/", (req, res, next) => {
   res.send(`Api running`);

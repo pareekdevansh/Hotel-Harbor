@@ -8,3 +8,5 @@ router.post("/getbookigsfromemail", bookingController.getBookingByEmail);
 
 router.get("/getallbookings", bookingController.getAllBookings);
 module.exports = router;
+
+

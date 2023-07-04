@@ -13,8 +13,7 @@ const adminRoute = require("./routes/adminRoute");
 const errorHandler = require("./middleware/error");
 const port = process.env.PORT || 5000;
 
-const allowedOrigin =
-  process.env.CLIENT_URL;
+const allowedOrigin = process.env.CLIENT_URL;
 
 // CORS configuration
 const corsOptions = {
@@ -30,6 +29,7 @@ const corsOptions = {
     }
   },
   credentials: true,
+  allowedHeaders: ["Authorization", "Content-Type"], // Add Authorization header
 };
 
 // Enable CORS middleware
@@ -47,7 +47,7 @@ app.get("/", (req, res, next) => {
   res.send(`Api running`);
 });
 
-//routes
+// Routes
 app.use("/api/private", privateRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
@@ -55,12 +55,14 @@ app.use("/api/rooms", roomsRoute);
 app.use("/api/bookings", bookingsRoute);
 app.use("/api/stripe", stripeRoute);
 app.use("/api/admin", adminRoute);
-app.use(errorHandler); // error handler : should be last in the middlewares
+app.use(errorHandler); // error handler: should be last in the middlewares
+
 const server = app.listen(port, () =>
   console.log(
     `server started on port : ${port} with url ${process.env.SERVER_URL}`
   )
 );
+
 process.on("unhandledRejection", (error, promise) => {
   console.log(`Logged Error: ${error}`);
   server.close(() => process.exit(1));

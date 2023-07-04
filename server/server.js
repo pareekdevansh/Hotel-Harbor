@@ -13,38 +13,40 @@ const adminRoute = require("./routes/adminRoute");
 const errorHandler = require("./middleware/error");
 const port = process.env.PORT || 5000;
 
-const allowedOrigin = process.env.CLIENT_URL;
+const client_url = process.env.CLIENT_URL;
+const stripe_url = process.env.STRIPE_CHECKOUT_URL;
 
 // CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    console.log(`origin is: ${origin}`);
-    console.log(`allowedOrigin: ${allowedOrigin}`);
-    if (origin === allowedOrigin) {
-      console.log("allowed");
-      callback(null, true);
-    } else {
-      console.log("not allowed");
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  allowedHeaders: ["Authorization", "Content-Type"], // Add Authorization header
-};
-
 // Enable CORS middleware
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.static("public"));
-
-// Set additional headers
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", allowedOrigin);
+  const allowedOrigins = [client_url, stripe_url];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  console.log("header allowed");
   next();
 });
 
+app.use(express.json());
+app.use(express.static("public"));
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", client_url);
+//   res.header("Access-Control-Allow-Origin",stripe_url);
+
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
+//   console.log("header allowed");
+//   next();
+// });
 app.get("/", (req, res, next) => {
-  res.send(`Api running`);
+  res.send(`API running`);
 });
 
 // Routes
@@ -59,7 +61,7 @@ app.use(errorHandler); // error handler: should be last in the middlewares
 
 const server = app.listen(port, () =>
   console.log(
-    `server started on port : ${port} with url ${process.env.SERVER_URL}`
+    `Server started on port: ${port} with URL: ${process.env.SERVER_URL}`
   )
 );
 

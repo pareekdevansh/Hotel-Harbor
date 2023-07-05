@@ -74,7 +74,6 @@ exports.verifyEmail = async (req, res, next) => {
       .update(token)
       .digest("hex");
     console.log("received data for verification is : ", {
-      userId,
       emailVerificationToken,
     });
     const user = await User.findOne({

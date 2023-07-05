@@ -4,7 +4,7 @@ const authController = require("../controllers/authController");
 
 router.post("/register", authController.register);
 
-router.put("/verifyemail", authController.verifyEmail);
+router.put("/verifyemail/:verificationToken", authController.verifyEmail);
 
 router.post("/login", authController.login);
 

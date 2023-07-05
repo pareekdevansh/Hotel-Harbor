@@ -77,11 +77,9 @@ exports.verifyEmail = async (req, res, next) => {
       userId,
       emailVerificationToken,
     });
-    const user = await User.findOne(
-      {
-        emailVerificationToken: emailVerificationToken,
-      }
-    );
+    const user = await User.findOne({
+      emailVerificationToken: emailVerificationToken,
+    });
     if (!user) {
       return new ErrorResponse("Invalid Email Verification Request", 400);
     }

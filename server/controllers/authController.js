@@ -14,7 +14,7 @@ exports.register = async (req, res, next) => {
       password: Joi.string().min(6).max(1024).required(),
     });
     const { error } = schema.validate(req.body);
-    // BAD REQUEST
+    // SCHEMA VALIDATION ERRORS
     if (error) throw new ErrorResponse(error.details[0].message, 400);
 
     // validate it's a unique user entry or not
@@ -25,10 +25,75 @@ exports.register = async (req, res, next) => {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
+      isVerified: false,
     });
-    res.send("User Registered Successfully");
+    // this will generate a new token and store the hashed_token into user's emailVerificationToken and return the token without hashing
+    const token = await user.getEmailVerificationToken();
+
+    // Create reset url to email to provided email
+    const emailVerificationUrl = `${process.env.CLIENT_URL}/verifyemail/${token}`;
+
+    // HTML Message
+    const message = `
+      <h1>You have been registered on Hotel Harbor</h1>
+      <p>Please click on following link to verify your email address:</p>
+      <a href=${emailVerificationUrl} clicktracking=off>${emailVerificationUrl}</a>
+    `;
+
+    console.log("before calling send mail ");
+    try {
+      await sendMail({
+        to: user.email,
+        subject: "Email Verification for Hotel-Harbor",
+        text: message,
+      });
+      console.log("after calling send mail ");
+
+      res.status(200).json({
+        success: true,
+        message: "User Registered Successfully",
+      });
+    } catch (error) {
+      user.emailVerificationToken = undefined;
+      await user.save();
+      throw new ErrorResponse("Email could not be sent", 500);
+    }
   } catch (error) {
+    console.log("error while registering : ", error.message);
     return next(new ErrorResponse(error.message, 500));
+  }
+};
+
+exports.verifyEmail = async (req, res, next) => {
+  try {
+    console.log("inside verify email");
+    const token = req.params.verificationToken;
+    // generate hash of received token and match it with user's emailVerificationToken
+    const emailVerificationToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+    console.log("received data for verification is : ", {
+      userId,
+      emailVerificationToken,
+    });
+    const user = await User.findOne(
+      {
+        emailVerificationToken: emailVerificationToken,
+      }
+    );
+    if (!user) {
+      return new ErrorResponse("Invalid Email Verification Request", 400);
+    }
+    user.emailVerificationToken = undefined;
+    user.isVerified = true;
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: "Email Verified Successfully",
+    });
+  } catch (error) {
+    next(new ErrorResponse(error.message, 400));
   }
 };
 
@@ -43,7 +108,10 @@ exports.login = async (req, res, next) => {
     if (error) throw new ErrorResponse(error.details[0].message, 400);
 
     // check if user exists or not
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({
+      email: req.body.email,
+      isVerified: true,
+    });
     if (!user) throw new ErrorResponse("Invalid Credentials", 401);
 
     // check if password is correct or not
@@ -125,8 +193,8 @@ exports.resetPassword = async (req, res, next) => {
     });
     console.log("user with such tokenRequest: ", user);
     if (!user) {
-      console.log("no such token found");
-      return next(new ErrorResponse("Invalid Token", 400));
+      console.log("Invalid Reset Password Request : no such token found");
+      return next(new ErrorResponse("Invalid Reset Password Request", 400));
     }
 
     user.password = req.body.password;

@@ -33,7 +33,11 @@ const UserSchema = mongoose.Schema(
     isAdmin: {
       type: Boolean,
       default: false,
-      // required: true,
+    },
+    emailVerificationToken: String,
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -63,6 +67,15 @@ UserSchema.methods.getSignedJwtToken = function () {
   });
 };
 
+UserSchema.methods.getEmailVerificationToken = async function () {
+  const emailVerificationToken = crypto.randomBytes(20).toString("hex");
+  this.emailVerificationToken = crypto
+    .createHash("sha256")
+    .update(emailVerificationToken)
+    .digest("hex");
+  await this.save();
+  return emailVerificationToken;
+};
 UserSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
 

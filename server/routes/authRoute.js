@@ -4,6 +4,8 @@ const authController = require("../controllers/authController");
 
 router.post("/register", authController.register);
 
+router.put("/verifyemail", authController.verifyEmail);
+
 router.post("/login", authController.login);
 
 router.post("/forgotpassword", authController.forgotPassword);
